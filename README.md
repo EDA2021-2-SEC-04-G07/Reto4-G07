@@ -16,3 +16,9 @@ Este directorio contiene todo el código de base que se entrega para el funciona
 -Test
 Este directorio contiene las pruebas realizadas a los TADs, Estructuras de Datos y Algoritmos.
 
+
+Integrantes ------
+
+Rafael Santiago Bastos Russi / 202110792 / r.bastos
+
+Santiago Andres Ramirez Ramirez / 201910908 / sa.ramirezr
