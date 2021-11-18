@@ -35,6 +35,7 @@ operación solicitada
 """
 
 def printMenu():
+    
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
     print("2- Encontrar puntos de interconexión aérea")
