@@ -30,6 +30,9 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT.graph import gr
+from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
 assert cf
 
 """
@@ -39,6 +42,18 @@ los mismos.
 
 # Construccion de modelos
 
+def initCatalogo():
+
+    catalogo = {
+        "aeropuertosRutas" : None,
+        "aeropuertosRutasIguales" : None
+    }
+
+    catalogo["aeropuertosRutas"] = gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=True,
+                                              size=14000,
+                                              comparefunction=cmpCiudades)
+
 # Funciones para agregar informacion al catalogo
 
 # Funciones para creacion de datos
@@ -46,5 +61,8 @@ los mismos.
 # Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def cmpCiudades():
+    pass
 
 # Funciones de ordenamiento
