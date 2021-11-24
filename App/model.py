@@ -45,6 +45,9 @@ los mismos.
 def initCatalogo():
 
     catalogo = {
+        "aeropuertos" : None,
+        "rutas" : None,
+        "ciudades" :None,
         "aeropuertosRutas" : None,
         "aeropuertosRutasIguales" : None
     }
