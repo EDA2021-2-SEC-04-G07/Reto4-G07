@@ -53,8 +53,24 @@ def initCatalogo():
                                               directed=True,
                                               size=14000,
                                               comparefunction=cmpCiudades)
+                                            
+    catalogo["aeropuertosRutasIguales"] = gr.newGraph(datastructure='ADJ_LIST',
+                                               directed=False,
+                                               size=14000,
+                                               comparefunction=cmpCiudades)
 
 # Funciones para agregar informacion al catalogo
+
+def agregarAeropuerto(catalogo, aeropuerto):
+    if not gr.containsVertex(catalogo['aeropuertosRutas'], aeropuerto['IATA']):
+            gr.insertVertex(catalogo['aeropuertosRutas'], aeropuerto['IATA'])
+    return catalogo
+
+def agregarRuta(catalogo, ruta):
+    edge = gr.getEdge(catalogo['aeropuertoRutas'], ruta['Departure'], ruta['Destination']) 
+    if edge is None:
+        gr.addEdge(catalogo['aeropuertoRutas'], ruta['Departure'], ruta['Destination'], ruta['distance_km'])
+    return catalogo
 
 # Funciones para creacion de datos
 
