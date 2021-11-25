@@ -77,48 +77,12 @@ def initCatalogo():
     return catalogo
 
 # Funciones para agregar informacion al catalogo
-
-def cargarAeropuerto(catalogo, dato):
-    
-    if not mp.contains(catalogo['aeropuertos'], dato['IATA']):
-        aeropuerto = nuevoAeropuerto(catalogo, dato)
-        mp.put(catalogo['aeropuertos'], dato['IATA'], aeropuerto)
-    
-    if not gr.containsVertex(catalogo['vuelos'], dato['IATA']):
-        gr.insertVertex(catalogo['vuelos'], dato['IATA'])
-        
         
 def cargarAeropuerto1(catalogo, dato):
     
     aeropuerto = nuevoAeropuerto1(dato)
     mp.put(catalogo['aeropuertos'], aeropuerto['IATA'], aeropuerto)
     gr.insertVertex(catalogo['vuelos'], aeropuerto['IATA'])
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-
-def cargarRuta(catalogo, dato):
-    
-    ruta = nuevaRuta(dato)
-    salidaDestino = (ruta['salida'], '-', ruta['destino'])
-    
-    if mp.contains(catalogo['rutas'], salidaDestino):
-        entry = mp.get(catalogo['rutas'], salidaDestino)
-        listaAerolineas = me.getValue(entry)['aerolineas']
-        lt.addLast(listaAerolineas, dato['Airline'])
-        
-    else:
-        mp.put(catalogo['rutas'], salidaDestino, ruta)
         
         
 def cargarRuta1(catalogo, dato):
@@ -134,32 +98,6 @@ def cargarRuta1(catalogo, dato):
         listaRutas = lt.newList(datastructure='ARRAY_LIST')
         lt.addLast(listaRutas, ruta)
         mp.put(catalogo['rutas'], ruta['salida'], listaRutas)
-        
-        
-    
-    
-    
-    
-    
-    
-        
-        
-        
-def agregarRutas(catalogo):
-    
-    listaAeropuertos = mp.keySet(catalogo['aeropuertos'])
-    
-    for aeropuerto in lt.iterator(listaAeropuertos):
-        entry = mp.get(catalogo['aeropuertos'], aeropuerto)
-        infoAeropuerto = me.getValue(entry)
-        destinos = infoAeropuerto['destinos']
-        
-        for destino in lt.iterator(destinos):
-            salDes = aeropuerto + '-' + destino
-            entryVuelo = mp.get(catalogo['rutas'], salDes)
-            infoVuelo = me.getValue(entryVuelo)
-            distancia = infoVuelo['distancia']
-            gr.addEdge(catalogo['vuelos'], aeropuerto, destino, distancia)
             
             
 def agregarRutas1(catalogo):
@@ -173,34 +111,6 @@ def agregarRutas1(catalogo):
         
             for destino in lt.iterator(listaDestinos):
                 gr.addEdge(catalogo['vuelos'], aeropuerto, destino['destino'], destino['distancia'])
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-def cargarVuelosIdaVuelta(catalogo):
-    
-    listaAeropuertos = gr.vertices(catalogo['vuelos'])
-    
-    for aeropuerto in lt.iterator(listaAeropuertos):
-        
-        if not gr.containsVertex(catalogo['vuelosIdaVuelta'], aeropuerto):
-            
-            listaDestinos = gr.adjacents(catalogo['vuelos'], aeropuerto)
-            
-            for destino in lt.iterator(listaDestinos):
-                listaSalidas = gr.adjacents(catalogo['vuelos'], destino)
-                if lt.isPresent(listaSalidas, aeropuerto):
-                    agregarVueloIdaVuelta(catalogo, aeropuerto, destino)
                     
                     
 def cargarVuelosIdaVuelta1(catalogo):
@@ -215,7 +125,6 @@ def cargarVuelosIdaVuelta1(catalogo):
             agregarRutaIdaVuelta(catalogo, arco)
     
     
-    
 def agregarRutaIdaVuelta(catalogo, arco):
     
     if not gr.containsVertex(catalogo['vuelosIdaVuelta'], arco['vertexA']):
@@ -225,44 +134,23 @@ def agregarRutaIdaVuelta(catalogo, arco):
         gr.insertVertex(catalogo['vuelosIdaVuelta'], arco['vertexB'])
         
     gr.addEdge(catalogo['vuelosIdaVuelta'], arco['vertexA'], arco['vertexB'], arco['weight'])
-                    
-                    
-                    
-def agregarVueloIdaVuelta(catalogo, aeropuerto, destino):
-    
-    salDes = aeropuerto + '-' + destino
-    entryDistancia = mp.get(catalogo['rutas'], salDes)
-    infoDistancia = me.getValue(entryDistancia)
-    distancia = infoDistancia['distancia']
-    
-    gr.insertVertex(catalogo['vuelosIdaVuelta'], aeropuerto)
-    gr.insertVertex(catalogo['vuelosIdaVuelta'], destino)
-    gr.addEdge(catalogo['vuelosIdaVuelta'], aeropuerto, destino, distancia)
-    
     
     
 def cargarCiudad(catalogo, dato):
     
     ciudad = nuevaCiudad(dato)
-    mp.put(catalogo['ciudades'], ciudad['nombre'], ciudad)
+    
+    if mp.contains(catalogo['ciudades'], ciudad['nombre']):
+        entryCiudad = mp.get(catalogo['ciudades'])
+        infoCiudad = me.getValue(entryCiudad)
+        lt.addLast(infoCiudad, ciudad)
+    else:
+        listaCiudades = lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(listaCiudades, ciudad)
+        mp.put(catalogo['ciudades'], ciudad['nombre'], listaCiudades)
     
         
 # Funciones para creacion de datos
-
-def nuevaRuta(dato):
-    
-    ruta = {
-        'salida': dato['Departure'],
-        'destino': dato['Destination'],
-        'distancia': dato['distance_km'], 
-        'aerolineas': None
-    }
-    
-    ruta['aerolineas'] = lt.newList(datastructure='ARRAY_LIST')
-    lt.addLast(ruta['aerolineas'], dato['Airline'])
-    
-    return ruta
-
 
 def nuevaRuta1(dato):
     
@@ -274,39 +162,6 @@ def nuevaRuta1(dato):
     }
     
     return ruta
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def nuevoAeropuerto(catalogo, dato):
-    
-    aeropuerto = {
-        'nombre': dato['Name'],
-        'ciudad': dato['City'],
-        'pais': dato['Country'],
-        'IATA': dato['IATA'],
-        'latitud': dato['Latitude'],
-        'longitud': dato['Longitude'],
-        'destinos': None
-    }
-    
-    aeropuerto['destinos'] = encontrarDestinos(catalogo, aeropuerto['IATA'])
-    
-    return aeropuerto
 
 
 def nuevoAeropuerto1(dato):
@@ -321,21 +176,6 @@ def nuevoAeropuerto1(dato):
     }
     
     return aeropuerto
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def nuevaCiudad(dato):
@@ -353,20 +193,8 @@ def nuevaCiudad(dato):
     
     return ciudad
 
+
 # Funciones de consulta
-
-def encontrarDestinos(catalogo, IATA):
-    
-    listaRutas = mp.keySet(catalogo['rutas'])
-    listaDestinos = lt.newList(datastructure='ARRAY_LIST')
-    
-    for i in listaRutas:
-        listaSalDes = i.split('-')
-        if IATA == listaSalDes[0]:
-            lt.addLast(listaDestinos, listaSalDes[1])
-            
-    return listaDestinos
-
 
 def numVertices(grafo):
     return gr.numVertices(grafo)
@@ -379,7 +207,6 @@ def numArcos(grafo):
 def sizeMap(mapa):
     return mp.size(mapa)
             
-        
     
 # Funciones utilizadas para comparar elementos dentro de una lista
 
