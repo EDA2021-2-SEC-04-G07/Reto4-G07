@@ -45,7 +45,10 @@ def printMenu():
     print("6- Cuantificar el efecto de un aeropuerto cerrado")
     print("7- Comparar con servicio WEB externo")
 
-catalog = None
+catalogo = None
+infoAeropuertos = 'airports_full.csv'
+infoRutas = 'routes_full.csv'
+infoCiudades = 'worldcities.csv'
 
 """
 Menu principal
@@ -55,6 +58,16 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+        
+        catalogo = controller.initCatalogo()
+        #controller.cargarDatos(catalogo, infoAeropuertos, infoRutas, infoCiudades)
+        controller.cargarDatos1(catalogo, infoAeropuertos, infoRutas, infoCiudades)
+        
+        print('Total aeropuertos digrafo: ', controller.numVertices(catalogo['vuelos']))
+        print('Total aeropuertos grafo no dirigido: ', controller.numVertices(catalogo['vuelosIdaVuelta']))
+        print('Total rutas digrafo: ', controller.numArcos(catalogo['vuelos']))
+        print('Total rutas grafo no dirigido: ', controller.numArcos(catalogo['vuelosIdaVuelta']))
+        print('Total de ciudades: ', controller.sizeMap(catalogo['ciudades']))
 
     elif int(inputs[0]) == 2:
         pass
