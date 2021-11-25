@@ -352,7 +352,6 @@ def nuevaCiudad(dato):
     }
     
     return ciudad
-    
 
 # Funciones de consulta
 
