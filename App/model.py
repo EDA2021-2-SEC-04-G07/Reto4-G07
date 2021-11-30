@@ -26,6 +26,7 @@
 
 
 import config as cf
+import haversine
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
@@ -81,6 +82,12 @@ def initCatalogo():
 def cargarAeropuerto1(catalogo, dato):
     
     aeropuerto = nuevoAeropuerto1(dato)
+    
+    entryCiudad = mp.get(catalogo['ciudades'], aeropuerto['ciudad'])
+    listaCiudades = me.getValue(entryCiudad)
+    listaAeropuertos = lt.firstElement(listaCiudades)
+    lt.addLast(listaAeropuertos, aeropuerto['IATA'])
+    
     mp.put(catalogo['aeropuertos'], aeropuerto['IATA'], aeropuerto)
     gr.insertVertex(catalogo['vuelos'], aeropuerto['IATA'])
         
@@ -141,11 +148,13 @@ def cargarCiudad(catalogo, dato):
     ciudad = nuevaCiudad(dato)
     
     if mp.contains(catalogo['ciudades'], ciudad['nombre']):
-        entryCiudad = mp.get(catalogo['ciudades'])
+        entryCiudad = mp.get(catalogo['ciudades'], ciudad['nombre'])
         infoCiudad = me.getValue(entryCiudad)
         lt.addLast(infoCiudad, ciudad)
     else:
         listaCiudades = lt.newList(datastructure='ARRAY_LIST')
+        lista_aeropuertos = lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(listaCiudades, lista_aeropuertos)
         lt.addLast(listaCiudades, ciudad)
         mp.put(catalogo['ciudades'], ciudad['nombre'], listaCiudades)
     
@@ -206,6 +215,70 @@ def numArcos(grafo):
 
 def sizeMap(mapa):
     return mp.size(mapa)
+
+
+def infoMap(mapa, llave):
+    
+    entry = mp.get(mapa, llave)
+    value = me.getValue(entry)
+    
+    return value
+
+
+def elementoLista(lista, pos):
+    
+    lista = lt.getElement(lista, pos)
+    return lista
+
+
+def primerElementoLista(lista):
+    
+    elemento = lt.firstElement(lista)
+    return elemento
+
+
+def dijsktra(grafo, origen):
+    
+    grafo = djk.Dijkstra(grafo, origen)
+    return grafo
+
+
+def infoMapInterconectados(catalogo, listaInterconectados, mayor):
+    
+    infoAeropuertos = lt.newList(datastructure='ARRAY_LIST')
+    
+    for aeropuerto in lt.iterator(listaInterconectados):
+    
+        entry = mp.get(catalogo['aeropuertos'], aeropuerto)
+        value = me.getValue(entry)
+        lt.addLast(infoAeropuertos, value)
+    
+    return infoAeropuertos, mayor
+
+
+def aeropuertosInterconectados(grafo, catalogo):
+    
+    mayor = 0
+    interconectadoMayor = None
+    listaAeropuertos = gr.vertices(grafo)
+    listaInterconectados = lt.newList(datastructure='ARRAY_LIST')
+    
+    for aeropuerto in lt.iterator(listaAeropuertos):
+        
+        puntInterconexion = gr.degree(grafo, aeropuerto)
+        
+        if puntInterconexion >= mayor:
+            mayor = puntInterconexion
+            
+    for aeropuerto in lt.iterator(listaAeropuertos):
+        
+        puntInterconexion = gr.degree(grafo, aeropuerto)
+        
+        if puntInterconexion >= mayor:
+            lt.addLast(listaInterconectados, aeropuerto)
+            
+    return infoMapInterconectados(catalogo, listaInterconectados, mayor)
+            
             
     
 # Funciones utilizadas para comparar elementos dentro de una lista

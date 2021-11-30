@@ -37,10 +37,10 @@ def initCatalogo():
 # Funciones para la carga de datos
     
 def cargarDatos1(catalogo, infoAeropuertos, infoRutas, infoCiudades):
+    cargarCiudades(catalogo, infoCiudades)
     cargarAeropuertos1(catalogo, infoAeropuertos)
     cargarRutas1(catalogo, infoRutas)
     agregarRutas1(catalogo)
-    cargarCiudades(catalogo, infoCiudades)
     cargarVuelosIdaVuelta1(catalogo)
     
    
@@ -93,3 +93,23 @@ def numArcos(grafo):
 
 def sizeMap(mapa):
     return model.sizeMap(mapa)
+
+
+def infoMap(catalogo, aeropuerto):
+    return infoMap(catalogo, aeropuerto)
+
+
+def elementoLista(lista, pos):
+    return model.elementoLista(lista, pos)
+
+
+def primerElementoLista(lista):
+    return 
+
+
+def dijsktra(grafo, origen):
+    return model.dijsktra(grafo, origen)
+
+
+def aeropuertosInterconectados(grafo, catalogo):
+    return model.aeropuertosInterconectados(grafo, catalogo)

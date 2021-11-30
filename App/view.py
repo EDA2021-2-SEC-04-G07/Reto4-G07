@@ -26,6 +26,8 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 
+sys.setrecursionlimit(1000000000)
+
 
 """
 La vista se encarga de la interacción con el usuario
@@ -69,8 +71,110 @@ while True:
         print('Total rutas grafo no dirigido: ', controller.numArcos(catalogo['vuelosIdaVuelta']))
         print('Total de ciudades: ', controller.sizeMap(catalogo['ciudades']))
 
+
     elif int(inputs[0]) == 2:
+        
+        listaInterconectadosDirigido = controller.aeropuertosInterconectados(catalogo['vuelos'], catalogo)
+        listaInterconectadosNODirigido = controller.aeropuertosInterconectados(catalogo['vuelosIdaVuelta'], catalogo)
+        
+        print('Los aeropuertos más interconectados en el digrafo son: ')
+        print('')
+        print('    IATA    |    Nombre    |    Ciudad    |    País')
+        print('')
+        
+        for aeropuerto in lt.iterator(listaInterconectadosDirigido[0]):
+             
+            print('    {}    {}    {}    {}  '.format(aeropuerto['IATA'], aeropuerto['nombre'], aeropuerto['ciudad'], aeropuerto['pais']))
+            
+        print('')
+        print('El número mayor de interconexiones es: ', listaInterconectadosDirigido[1])
+            
+        
+        print('')
+        print('')    
+        print('Los aeropuertos más interconectados en el grafo no dirigido son: ')
+        print('')
+        print('    IATA    |    Nombre    |    Ciudad    |    País')
+        print('')
+        
+        for aeropuerto in lt.iterator(listaInterconectadosNODirigido[0]):
+            
+            print('  {}  {}  {}  {}  '.format(aeropuerto['IATA'], aeropuerto['nombre'], aeropuerto['ciudad'], aeropuerto['pais']))
+            
+        print('')
+        print('El número mayor de interconexiones es: ', listaInterconectadosNODirigido[1])
+        
+    elif inputs[0] == 3:
         pass
+    
+    elif inputs[0] == 4:
+        
+        ciudadSalida = input('Digite la ciudad de salida: ')
+        ciudadLlegada = input('Digite la ciudad de llegada: ')
+        
+        listaCiudadesSalida = controller.infoMap(catalogo['ciudades'], ciudadSalida)
+        listaCiudadesLlegada = controller.infoMap(catalogo['ciudades'], ciudadLlegada)
+        
+        print('A continuación se muestran las ciudades homónimas de salida')
+        print('')
+        print('    Ciudad    |    País    |    Latitud    |    Longitud')
+        print('')
+        
+        for ciudad in lt.iterator(listaCiudadesSalida):
+            print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
+            
+        print('')
+        posSalida = input('Digite la posición de la ciudad de salida que desea: ')
+        print('')
+        print('')
+        
+        print('A continuación se muestran las ciudades homónimas de llegada')
+        print('')
+        print('    Ciudad    |    País    |    Latitud    |    Longitud')
+        print('')
+        
+        for ciudad in lt.iterator(listaCiudadesLlegada):
+            print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
+            
+        print('')
+        posLlegada = input('Digite la posición de la ciudad de llegada que desea: ')
+        
+        ciudadSalidaFinal = controller.elementoLista(listaCiudadesSalida, posSalida)
+        ciudadLlegadaFinal = controller.elementoLista(listaCiudadesLlegada, posLlegada)
+        coordenadasCiudadSalida = (ciudadSalidaFinal['latitud'], ciudadSalidaFinal['longitud'])
+        coordenadasCiudadLlegada = (ciudadLlegadaFinal['latitud'], ciudadLlegadaFinal['longitud'])
+        
+        listaAeropuertosSalida = controller.primerElementoLista(listaCiudadesSalida)
+        listaAeropuertosLlegada = controller.primerElementoLista(listaCiudadesLlegada)
+        
+        menorSalida = 10000000000
+        aeropuertoMenorSalida = None
+        menorLlegada = 10000000000
+        aeropuertoMenorLlegada = None
+        
+        for aeropuerto in lt.iterator(listaAeropuertosSalida):
+            
+            infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto)
+            coordenadasAeropuerto = (infoAeropuerto['latitud'], infoAeropuerto['longitud'])
+            
+            haversine = controller.calcularHaversine(coordenadasAeropuerto, coordenadasCiudadSalida)
+            
+            if haversine < menorSalida:
+                menorSalida = haversine
+                aeropuertoMenorSalida = aeropuerto
+                
+        for aeropuerto in lt.iterator(listaAeropuertosLlegada):
+            
+            infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto)
+            coordenadasAeropuerto = (infoAeropuerto['latitud'], infoAeropuerto['longitud'])
+            
+            haversine = controller.calcularHaversine(coordenadasAeropuerto, coordenadasCiudadLlegada)
+            
+            if haversine < menorLlegada:
+                menorLlegada = haversine
+                aeropuertoMenorLlegada = aeropuerto
+                
+        grafoRutasMínimas = controller.dijsktra(catalogo['vuelos'], aeropuertoMenorSalida)
 
     else:
         sys.exit(0)
