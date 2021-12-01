@@ -91,12 +91,16 @@ def numArcos(grafo):
     return model.numArcos(grafo)
 
 
+def obtenerArco(grafo, verticeA, verticeB):
+    return model.obtenerArco(grafo, verticeA, verticeB)
+
+
 def sizeMap(mapa):
     return model.sizeMap(mapa)
 
 
 def infoMap(catalogo, aeropuerto):
-    return infoMap(catalogo, aeropuerto)
+    return model.infoMap(catalogo, aeropuerto)
 
 
 def elementoLista(lista, pos):
@@ -104,11 +108,35 @@ def elementoLista(lista, pos):
 
 
 def primerElementoLista(lista):
-    return 
+    return model.primerElementoLista(lista)
+
+
+def sizeList(lista):
+    return model.sizeList(lista)
+
+
+def subList(lista, pos, num):
+    return model.subList(lista, pos, num)
+
+
+def calcularHaversine(coordenadasAeropuerto, coordenadasCiudadSalida):
+    return model.calcularHaversine(coordenadasAeropuerto, coordenadasCiudadSalida)
 
 
 def dijsktra(grafo, origen):
     return model.dijsktra(grafo, origen)
+
+
+def camino(grafo, vertice):
+    return model.camino(grafo, vertice)
+
+
+def sizePila(pila):
+    return model.sizePila(pila)
+
+
+def elementoPila(pila):
+    return model.elementoPila(pila)
 
 
 def aeropuertosInterconectados(grafo, catalogo):

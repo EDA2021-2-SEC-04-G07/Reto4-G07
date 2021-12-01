@@ -104,10 +104,10 @@ while True:
         print('')
         print('El número mayor de interconexiones es: ', listaInterconectadosNODirigido[1])
         
-    elif inputs[0] == 3:
+    elif int(inputs[0]) == 3:
         pass
     
-    elif inputs[0] == 4:
+    elif int(inputs[0]) == 4:
         
         ciudadSalida = input('Digite la ciudad de salida: ')
         ciudadLlegada = input('Digite la ciudad de llegada: ')
@@ -120,11 +120,14 @@ while True:
         print('    Ciudad    |    País    |    Latitud    |    Longitud')
         print('')
         
-        for ciudad in lt.iterator(listaCiudadesSalida):
+        elementosSublistaSalida = controller.sizeList(listaCiudadesSalida)
+        listaCiudadesSalidaFinal = controller.subList(listaCiudadesSalida, 2, elementosSublistaSalida-1)
+        
+        for ciudad in lt.iterator(listaCiudadesSalidaFinal):
             print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
             
         print('')
-        posSalida = input('Digite la posición de la ciudad de salida que desea: ')
+        posSalida = int(input('Digite la posición de la ciudad de salida que desea: '))
         print('')
         print('')
         
@@ -133,16 +136,19 @@ while True:
         print('    Ciudad    |    País    |    Latitud    |    Longitud')
         print('')
         
-        for ciudad in lt.iterator(listaCiudadesLlegada):
+        elementosSublistaLlegada = controller.sizeList(listaCiudadesLlegada)
+        listaCiudadesLlegadaFinal = controller.subList(listaCiudadesLlegada, 2, elementosSublistaLlegada-1)
+        
+        for ciudad in lt.iterator(listaCiudadesLlegadaFinal):
             print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
             
         print('')
-        posLlegada = input('Digite la posición de la ciudad de llegada que desea: ')
+        posLlegada = int(input('Digite la posición de la ciudad de llegada que desea: '))
         
-        ciudadSalidaFinal = controller.elementoLista(listaCiudadesSalida, posSalida)
-        ciudadLlegadaFinal = controller.elementoLista(listaCiudadesLlegada, posLlegada)
-        coordenadasCiudadSalida = (ciudadSalidaFinal['latitud'], ciudadSalidaFinal['longitud'])
-        coordenadasCiudadLlegada = (ciudadLlegadaFinal['latitud'], ciudadLlegadaFinal['longitud'])
+        ciudadSalidaFinal = controller.elementoLista(listaCiudadesSalidaFinal, posSalida)
+        ciudadLlegadaFinal = controller.elementoLista(listaCiudadesLlegadaFinal, posLlegada)
+        coordenadasCiudadSalida = (float(ciudadSalidaFinal['latitud']), float(ciudadSalidaFinal['longitud']))
+        coordenadasCiudadLlegada = (float(ciudadLlegadaFinal['latitud']), float(ciudadLlegadaFinal['longitud']))
         
         listaAeropuertosSalida = controller.primerElementoLista(listaCiudadesSalida)
         listaAeropuertosLlegada = controller.primerElementoLista(listaCiudadesLlegada)
@@ -155,7 +161,7 @@ while True:
         for aeropuerto in lt.iterator(listaAeropuertosSalida):
             
             infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto)
-            coordenadasAeropuerto = (infoAeropuerto['latitud'], infoAeropuerto['longitud'])
+            coordenadasAeropuerto = (float(infoAeropuerto['latitud']), float(infoAeropuerto['longitud']))
             
             haversine = controller.calcularHaversine(coordenadasAeropuerto, coordenadasCiudadSalida)
             
@@ -166,7 +172,7 @@ while True:
         for aeropuerto in lt.iterator(listaAeropuertosLlegada):
             
             infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto)
-            coordenadasAeropuerto = (infoAeropuerto['latitud'], infoAeropuerto['longitud'])
+            coordenadasAeropuerto = (float(infoAeropuerto['latitud']), float(infoAeropuerto['longitud']))
             
             haversine = controller.calcularHaversine(coordenadasAeropuerto, coordenadasCiudadLlegada)
             
@@ -175,6 +181,27 @@ while True:
                 aeropuertoMenorLlegada = aeropuerto
                 
         grafoRutasMínimas = controller.dijsktra(catalogo['vuelos'], aeropuertoMenorSalida)
+        camino = controller.camino(grafoRutasMínimas, aeropuertoMenorLlegada)
+        
+        print('')
+        print('Aeropuerto origen: ', aeropuertoMenorSalida)
+        print('Aeropuerto destino: ', aeropuertoMenorLlegada)
+        print('')
+        print('Ruta: ')
+        print('')
+        
+        i = controller.sizePila(camino)
+        sumaDistanciaRuta = 0
+        
+        while i > 0:
+            
+            elemento = controller.elementoPila(camino)
+            sumaDistanciaRuta += elemento['weight']
+            print('{} --> {}  //Distancia: {} km'.format(elemento['vertexA'], elemento['vertexB'], elemento['weight']))
+         
+        distanciaTotal = menorSalida + menorLlegada +  sumaDistanciaRuta  
+        print('Distancia total de la ruta: ', distanciaTotal)
+        
 
     else:
         sys.exit(0)

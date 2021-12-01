@@ -26,9 +26,10 @@
 
 
 import config as cf
-import haversine
+import haversine as hv
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.ADT import stack as sk
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT.graph import gr
@@ -84,9 +85,11 @@ def cargarAeropuerto1(catalogo, dato):
     aeropuerto = nuevoAeropuerto1(dato)
     
     entryCiudad = mp.get(catalogo['ciudades'], aeropuerto['ciudad'])
-    listaCiudades = me.getValue(entryCiudad)
-    listaAeropuertos = lt.firstElement(listaCiudades)
-    lt.addLast(listaAeropuertos, aeropuerto['IATA'])
+    
+    if entryCiudad != None:
+        listaCiudades = me.getValue(entryCiudad)
+        listaAeropuertos = lt.firstElement(listaCiudades)
+        lt.addLast(listaAeropuertos, aeropuerto['IATA'])
     
     mp.put(catalogo['aeropuertos'], aeropuerto['IATA'], aeropuerto)
     gr.insertVertex(catalogo['vuelos'], aeropuerto['IATA'])
@@ -166,7 +169,7 @@ def nuevaRuta1(dato):
     ruta = {
         'salida': dato['Departure'],
         'destino': dato['Destination'],
-        'distancia': dato['distance_km'], 
+        'distancia': float(dato['distance_km']), 
         'aerolinea': dato['Airline']
     }
     
@@ -213,6 +216,10 @@ def numArcos(grafo):
     return gr.numEdges(grafo)
 
 
+def obtenerArco(grafo, verticeA, verticeB):
+    return gr.getEdge(grafo, verticeA, verticeB)
+
+
 def sizeMap(mapa):
     return mp.size(mapa)
 
@@ -237,10 +244,41 @@ def primerElementoLista(lista):
     return elemento
 
 
+def sizeList(lista):
+    return lt.size(lista)
+
+
+def subList(lista, pos, num):
+    return lt.subList(lista, pos, num)
+
+
+def calcularHaversine(coordenadasAeropuerto, coordenadasCiudadSalida):
+    
+    haversine = hv.haversine(coordenadasAeropuerto, coordenadasCiudadSalida)
+    
+    return haversine
+
+
 def dijsktra(grafo, origen):
     
     grafo = djk.Dijkstra(grafo, origen)
     return grafo
+
+
+def camino(grafo, vertice):
+    
+    pila = djk.pathTo(grafo, vertice)
+    return pila
+
+
+def sizePila(pila):
+    return sk.size(pila)
+
+
+def elementoPila(pila):
+    return sk.pop(pila)
+    
+    
 
 
 def infoMapInterconectados(catalogo, listaInterconectados, mayor):
