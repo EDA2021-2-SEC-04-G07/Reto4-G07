@@ -32,6 +32,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import stack as sk
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as mst
 from DISClib.ADT.graph import gr
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
@@ -51,7 +52,8 @@ def initCatalogo():
         "aeropuertos":None,
         "vuelos" : None,
         "vuelosIdaVuelta" : None,
-        "ciudades": None
+        "ciudades": None,
+        "listaRutas": None
     }
     
     catalogo['rutas'] = mp.newMap(numelements=14000,
@@ -76,6 +78,8 @@ def initCatalogo():
                                      maptype='CHAINING',
                                      comparefunction=None)
     
+    catalogo['listaRutas'] = lt.newList(datastructure='ARRAY_LIST')
+    
     return catalogo
 
 # Funciones para agregar informacion al catalogo
@@ -98,6 +102,8 @@ def cargarAeropuerto1(catalogo, dato):
 def cargarRuta1(catalogo, dato):
     
     ruta = nuevaRuta1(dato)
+    arco = '{}-{}'.format(ruta['salida'], ruta['destino'])
+    lt.addLast(catalogo['listaRutas'], arco)
     
     if mp.contains(catalogo['rutas'], ruta['salida']):
         entryRutas = mp.get(catalogo['rutas'], ruta['salida'])
@@ -113,6 +119,7 @@ def cargarRuta1(catalogo, dato):
 def agregarRutas1(catalogo):
     
     listaAeropuertos = gr.vertices(catalogo['vuelos'])
+    listaRutas = lt.newList(datastructure='ARRAY_LIST')
     
     for aeropuerto in lt.iterator(listaAeropuertos):
         entryDestinos = mp.get(catalogo['rutas'], aeropuerto)
@@ -120,22 +127,47 @@ def agregarRutas1(catalogo):
             listaDestinos = me.getValue(entryDestinos)
         
             for destino in lt.iterator(listaDestinos):
+                
+                arco = '{}-{}'.format(aeropuerto, destino['destino'])
+                
+                if not lt.isPresent(listaRutas, arco):
+                    lt.addLast(listaRutas, arco)
+                    
                 gr.addEdge(catalogo['vuelos'], aeropuerto, destino['destino'], destino['distancia'])
+                
+    numRutas = lt.size(listaRutas)
+    
+    return numRutas
                     
                     
 def cargarVuelosIdaVuelta1(catalogo):
     
     listaArcos = gr.edges(catalogo['vuelos'])
+    listaRutas = lt.newList(datastructure='ARRAY_LIST')
+    numRutas = 0
     
     for arco in lt.iterator(listaArcos):
         
         arcoTranspuesto = gr.getEdge(catalogo['vuelos'], arco['vertexB'], arco['vertexA'])
         
         if arcoTranspuesto is not None:
-            agregarRutaIdaVuelta(catalogo, arco)
+            agregarRutaIdaVuelta(catalogo, arco, listaRutas)
+            
+    numRutas = lt.size(listaRutas)
+    
+    return numRutas
     
     
-def agregarRutaIdaVuelta(catalogo, arco):
+def agregarRutaIdaVuelta(catalogo, arco, listaRutas):
+    
+    ruta = '{}-{}'.format(arco['vertexA'], arco['vertexB'])
+    rutaTranspuesta = '{}-{}'.format(arco['vertexB'], arco['vertexA'])
+    
+    if not lt.isPresent(listaRutas, ruta):
+        lt.addLast(listaRutas, ruta)
+        
+    if not lt.isPresent(listaRutas, rutaTranspuesta):
+        lt.addLast(listaRutas, rutaTranspuesta)
     
     if not gr.containsVertex(catalogo['vuelosIdaVuelta'], arco['vertexA']):
         gr.insertVertex(catalogo['vuelosIdaVuelta'], arco['vertexA'])
@@ -143,15 +175,16 @@ def agregarRutaIdaVuelta(catalogo, arco):
     if not gr.containsVertex(catalogo['vuelosIdaVuelta'], arco['vertexB']):
         gr.insertVertex(catalogo['vuelosIdaVuelta'], arco['vertexB'])
         
-    gr.addEdge(catalogo['vuelosIdaVuelta'], arco['vertexA'], arco['vertexB'], arco['weight'])
+    if gr.getEdge(catalogo['vuelosIdaVuelta'], arco['vertexA'], arco['vertexB']) == None:
+        gr.addEdge(catalogo['vuelosIdaVuelta'], arco['vertexA'], arco['vertexB'], float(arco['weight']))
     
     
 def cargarCiudad(catalogo, dato):
     
     ciudad = nuevaCiudad(dato)
     
-    if mp.contains(catalogo['ciudades'], ciudad['nombre']):
-        entryCiudad = mp.get(catalogo['ciudades'], ciudad['nombre'])
+    if mp.contains(catalogo['ciudades'], ciudad['nombre_ASCII']):
+        entryCiudad = mp.get(catalogo['ciudades'], ciudad['nombre_ASCII'])
         infoCiudad = me.getValue(entryCiudad)
         lt.addLast(infoCiudad, ciudad)
     else:
@@ -159,7 +192,7 @@ def cargarCiudad(catalogo, dato):
         lista_aeropuertos = lt.newList(datastructure='ARRAY_LIST')
         lt.addLast(listaCiudades, lista_aeropuertos)
         lt.addLast(listaCiudades, ciudad)
-        mp.put(catalogo['ciudades'], ciudad['nombre'], listaCiudades)
+        mp.put(catalogo['ciudades'], ciudad['nombre_ASCII'], listaCiudades)
     
         
 # Funciones para creacion de datos
@@ -296,26 +329,29 @@ def infoMapInterconectados(catalogo, listaInterconectados, mayor):
 
 def aeropuertosInterconectados(grafo, catalogo):
     
-    mayor = 0
-    interconectadoMayor = None
     listaAeropuertos = gr.vertices(grafo)
     listaInterconectados = lt.newList(datastructure='ARRAY_LIST')
     
     for aeropuerto in lt.iterator(listaAeropuertos):
         
-        puntInterconexion = gr.degree(grafo, aeropuerto)
+        puntInterconexion = gr.indegree(grafo, aeropuerto) + gr.outdegree(grafo, aeropuerto)
         
-        if puntInterconexion >= mayor:
-            mayor = puntInterconexion
+        if puntInterconexion != 0:
             
-    for aeropuerto in lt.iterator(listaAeropuertos):
+            dato = {
+                "aeropuerto": aeropuerto,
+                "puntInterconexión": puntInterconexion
+            }
         
-        puntInterconexion = gr.degree(grafo, aeropuerto)
+            lt.addLast(listaInterconectados, dato)
         
-        if puntInterconexion >= mayor:
-            lt.addLast(listaInterconectados, aeropuerto)
-            
-    return infoMapInterconectados(catalogo, listaInterconectados, mayor)
+    return listaInterconectados
+
+
+def sublista(lista, pos, num):
+    
+    sublista = lt.subList(lista, pos, num)
+    return sublista
             
             
     
@@ -324,4 +360,20 @@ def aeropuertosInterconectados(grafo, catalogo):
 def cmpCiudades():
     pass
 
+
+def cmpInterconectados(aero1, aero2):
+    
+    if int(aero1['puntInterconexión']) > int(aero2['puntInterconexión']):
+        return True
+    else:
+        return False
+    
+
 # Funciones de ordenamiento
+
+def merge(lista, identificador):
+    
+    if identificador == 1:
+        lista = mst.sort(lista, cmpInterconectados)
+        
+    return lista
