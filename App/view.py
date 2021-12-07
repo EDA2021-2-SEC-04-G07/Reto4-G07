@@ -277,7 +277,22 @@ while True:
         aeropuerto = input('Escriba el codigo del aeropuerto de salida: ')
         millas = input('Escriba el numero de millas disponibles: ')
 
-
+    elif int(inputs[0]) == 6:
+        IATA = input('Escriba el codigo del aeropuerto fuera de funcionamiento: ')
+        listaIATA = controller.llamarDarRutasAfectadas(catalogo['listaRutas'], IATA)
+        listaAeropuertos = controller.llamarDarListaAeropuertosIATA(catalogo, listaIATA)
+        
+        print('')
+        print(f'Existen {lt.size(listaAeropuertos)} aeropuertos afectados gracias al no funcionamiento del aeropuerto cono IATA: {IATA}')
+        print('Los primeros y ultimos 3 aeropuertos afectados fueron:')
+        print('')
+        print('    Ciudad    |    País    |    Latitud    |    Longitud')
+        print('')
+        
+        for ciudad in lt.iterator(lt.subList(listaAeropuertos, 1, 3)):
+            print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
+        for ciudad in lt.iterator(lt.subList(listaAeropuertos, lt.size(listaAeropuertos)-2, 3)):
+            print('{}    {}    {}    {}'.format(ciudad['nombre'], ciudad['pais'], ciudad['latitud'], ciudad['longitud']))
 
     else:
         sys.exit(0)

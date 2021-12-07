@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.ADT.indexminpq import contains
 import config as cf
 import haversine as hv
 from DISClib.ADT import list as lt
@@ -319,8 +320,22 @@ def sizePila(pila):
 def elementoPila(pila):
     return sk.pop(pila)
     
-    
+def darRutasAfectadas(listaRutas,IATA):
+    lista = lt.newList('ARRAY_LIST')
+    for ruta in lt.iterator(listaRutas):
+        if IATA in ruta:
+            a = ruta.replace('-','')
+            a = a.replace(IATA,'')
+            if not lt.isPresent(lista, a):
+                lt.addLast(lista, a)
+    return lista
 
+def darListaAeropuertosIATA(catalogo, listaIATA):
+    lista = lt.newList('ARRAY_LIST')
+    for IATA in lt.iterator(listaIATA):
+        aeropuerto = infoMap(catalogo['aeropuertos'], IATA)
+        lt.addLast(lista, aeropuerto)
+    return lista
 
 def infoMapInterconectados(catalogo, listaInterconectados, mayor):
     

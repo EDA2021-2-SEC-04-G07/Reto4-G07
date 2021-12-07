@@ -159,3 +159,9 @@ def llamarEstanFuertementeConectados(grafo,elemento1,elemento2):
 
 def sublista(lista, pos, num):
     return model.sublista(lista, pos, num)
+
+def llamarDarRutasAfectadas(listaRutas,IATA):
+    return model.darRutasAfectadas(listaRutas,IATA)
+
+def llamarDarListaAeropuertosIATA(catalogo, listaIATA):
+    return model.darListaAeropuertosIATA(catalogo, listaIATA)
