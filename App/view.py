@@ -63,46 +63,86 @@ while True:
         
         catalogo = controller.initCatalogo()
         #controller.cargarDatos(catalogo, infoAeropuertos, infoRutas, infoCiudades)
-        controller.cargarDatos1(catalogo, infoAeropuertos, infoRutas, infoCiudades)
+        cont = controller.cargarDatos1(catalogo, infoAeropuertos, infoRutas, infoCiudades)
         
-        print('Total aeropuertos digrafo: ', controller.numVertices(catalogo['vuelos']))
-        print('Total aeropuertos grafo no dirigido: ', controller.numVertices(catalogo['vuelosIdaVuelta']))
-        print('Total rutas digrafo: ', controller.numArcos(catalogo['vuelos']))
-        print('Total rutas grafo no dirigido: ', controller.numArcos(catalogo['vuelosIdaVuelta']))
-        print('Total de ciudades: ', controller.sizeMap(catalogo['ciudades']))
+        print('======== Grafo Dirigido ========')
+        print('Total aeropuertos: ', controller.numVertices(catalogo['vuelos']))
+        print('Total rutas: ', cont[1])
+        print('Total arcos: ', controller.numArcos(catalogo['vuelos']))
+        print('')
+        print('======== Grafo NO Dirigido ========')
+        print('Total aeropuertos: ', controller.numVertices(catalogo['vuelosIdaVuelta']))
+        print('Total rutas: ', cont[2])
+        print('Total arcos: ', controller.numArcos(catalogo['vuelosIdaVuelta']))
+        print('')
+        print('Total de ciudades: ', cont[0])
 
 
     elif int(inputs[0]) == 2:
         
         listaInterconectadosDirigido = controller.aeropuertosInterconectados(catalogo['vuelos'], catalogo)
         listaInterconectadosNODirigido = controller.aeropuertosInterconectados(catalogo['vuelosIdaVuelta'], catalogo)
+        listaInterconectadosDirigidoOrdenada = controller.merge(listaInterconectadosDirigido, 1)
+        listaInterconectadosNODirigidoOrdenada = controller.merge(listaInterconectadosNODirigido, 1)
         
-        print('Los aeropuertos más interconectados en el digrafo son: ')
-        print('')
-        print('    IATA    |    Nombre    |    Ciudad    |    País')
-        print('')
-        
-        for aeropuerto in lt.iterator(listaInterconectadosDirigido[0]):
-             
-            print('    {}    {}    {}    {}  '.format(aeropuerto['IATA'], aeropuerto['nombre'], aeropuerto['ciudad'], aeropuerto['pais']))
+        if controller.sizeList(listaInterconectadosDirigidoOrdenada) < 5:
+            top5Dirigido = controller.sublista(listaInterconectadosDirigidoOrdenada, 1, controller.sizeList(listaInterconectadosDirigidoOrdenada))
+        else:
+            top5Dirigido = controller.sublista(listaInterconectadosDirigidoOrdenada, 1, 5)
             
-        print('')
-        print('El número mayor de interconexiones es: ', listaInterconectadosDirigido[1])
-            
+        if controller.sizeList(listaInterconectadosNODirigidoOrdenada) < 5:
+            top5NODirigido = controller.sublista(listaInterconectadosNODirigidoOrdenada, 1, controller.sizeList(listaInterconectadosNODirigidoOrdenada))
+        else:
+            top5NODirigido = controller.sublista(listaInterconectadosNODirigidoOrdenada, 1, 5)
         
-        print('')
-        print('')    
-        print('Los aeropuertos más interconectados en el grafo no dirigido son: ')
-        print('')
-        print('    IATA    |    Nombre    |    Ciudad    |    País')
+        print('======== Grafo Dirigido ========')
         print('')
         
-        for aeropuerto in lt.iterator(listaInterconectadosNODirigido[0]):
+        if controller.sizeList(top5Dirigido) != 0:
             
-            print('  {}  {}  {}  {}  '.format(aeropuerto['IATA'], aeropuerto['nombre'], aeropuerto['ciudad'], aeropuerto['pais']))
+            print('Los 5 aeropuertos más interconectados son: ')
+            print('')
+            print('    IATA    |    Nombre    |    Ciudad    |    País    |    Número de Interconexiones')
+            print('')
+            
+            for aeropuerto in lt.iterator(top5Dirigido):
+            
+                infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto['aeropuerto'])
+                print('    {}    {}    {}    {}     {}'.format(infoAeropuerto['IATA'], infoAeropuerto['nombre'], infoAeropuerto['ciudad'], infoAeropuerto['pais'], aeropuerto['puntInterconexión']))
+        
+            print('')
+            print('El número de aeropuertos interconectados es: ', controller.sizeList(listaInterconectadosDirigidoOrdenada))
+        
+        elif controller.sizeList(top5Dirigido) == 0:
+            print('No existen aeropuertos interconectados')
             
         print('')
-        print('El número mayor de interconexiones es: ', listaInterconectadosNODirigido[1])
+        print('')
+        
+        print('======== Grafo No Dirigido ========')
+        print('')
+        
+        if controller.sizeList(top5NODirigido) != 0:
+            
+            print('Los 5 aeropuertos más interconectados son: ')
+            print('')
+            print('    IATA    |    Nombre    |    Ciudad    |    País    |    Número de Interconexiones')
+            print('')
+        
+            for aeropuerto in lt.iterator(top5NODirigido):
+            
+                infoAeropuerto = controller.infoMap(catalogo['aeropuertos'], aeropuerto['aeropuerto'])
+                print('  {}  {}  {}  {}  {}'.format(infoAeropuerto['IATA'], infoAeropuerto['nombre'], infoAeropuerto['ciudad'], infoAeropuerto['pais'], aeropuerto['puntInterconexión']))
+            
+            print('')
+            print('El número de aeropuertos interconectados es: ', controller.sizeList(listaInterconectadosNODirigidoOrdenada))
+            
+        elif controller.sizeList(top5NODirigido) == 0:
+            print('No existen aeropuertos interconectados')
+            
+        print('')
+        print('')
+
         
     elif int(inputs[0]) == 3:
         numComponentes = controller.llamarNumeroComponentesFuertementeConectados(catalogo['vuelos'])
@@ -223,9 +263,14 @@ while True:
             elemento = controller.elementoPila(camino)
             sumaDistanciaRuta += elemento['weight']
             print('{} --> {}  //Distancia: {} km'.format(elemento['vertexA'], elemento['vertexB'], elemento['weight']))
+            i -= 1
          
-        distanciaTotal = menorSalida + menorLlegada +  sumaDistanciaRuta  
+        #distanciaTotal = menorSalida + menorLlegada +  sumaDistanciaRuta  Esta incluye la distancia de la ciudad al aeropuerto
+        distanciaTotal = menorSalida + menorLlegada
+        print('')
         print('Distancia total de la ruta: ', distanciaTotal)
+        print('')
+        print('')
         
 
     elif int(inputs[0]) == 5:

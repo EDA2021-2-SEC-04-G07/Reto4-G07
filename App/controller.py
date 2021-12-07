@@ -37,15 +37,17 @@ def initCatalogo():
 # Funciones para la carga de datos
     
 def cargarDatos1(catalogo, infoAeropuertos, infoRutas, infoCiudades):
-    cargarCiudades(catalogo, infoCiudades)
+    cont = cargarCiudades(catalogo, infoCiudades)
     cargarAeropuertos1(catalogo, infoAeropuertos)
     cargarRutas1(catalogo, infoRutas)
-    agregarRutas1(catalogo)
-    cargarVuelosIdaVuelta1(catalogo)
+    numRutas = agregarRutas1(catalogo)
+    numRutasIdaVuelta = cargarVuelosIdaVuelta1(catalogo)
+    
+    return cont, numRutas, numRutasIdaVuelta
     
    
 def agregarRutas1(catalogo):
-    model.agregarRutas1(catalogo)    
+    return model.agregarRutas1(catalogo)    
  
                
 def cargarAeropuertos1(catalogo, infoAeropuertos):
@@ -67,19 +69,26 @@ def cargarRutas1(catalogo, infoRutas):
     
     
 def cargarVuelosIdaVuelta1(catalogo):
-    model.cargarVuelosIdaVuelta1(catalogo)
+    return model.cargarVuelosIdaVuelta1(catalogo)
       
     
 def cargarCiudades(catalogo, infoCiudades):
     
     archivoCiudades = cf.data_dir + infoCiudades
     archivo = csv.DictReader(open(archivoCiudades, encoding="utf-8"), delimiter=",")
+    cont = 0
     
     for dato in archivo:
         model.cargarCiudad(catalogo, dato)
+        cont += 1
+        
+    return cont
     
 
 # Funciones de ordenamiento
+
+def merge(lista, identificador):
+    return model.merge(lista, identificador)
 
 # Funciones de consulta sobre el catálogo
 
@@ -147,3 +156,6 @@ def llamarNumeroComponentesFuertementeConectados(grafo):
 
 def llamarEstanFuertementeConectados(grafo,elemento1,elemento2):
     return model.estanFuertementeConectados(grafo,elemento1,elemento2)
+
+def sublista(lista, pos, num):
+    return model.sublista(lista, pos, num)
