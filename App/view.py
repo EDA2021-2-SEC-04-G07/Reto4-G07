@@ -48,9 +48,9 @@ def printMenu():
     print("7- Comparar con servicio WEB externo")
 
 catalogo = None
-infoAeropuertos = 'airports_full.csv'
-infoRutas = 'routes_full.csv'
-infoCiudades = 'worldcities.csv'
+infoAeropuertos = 'airports-utf8-small.csv'
+infoRutas = 'routes-utf8-small.csv'
+infoCiudades = 'worldcities-utf8.csv'
 
 """
 Menu principal
@@ -105,8 +105,33 @@ while True:
         print('El número mayor de interconexiones es: ', listaInterconectadosNODirigido[1])
         
     elif int(inputs[0]) == 3:
-        pass
-    
+        numComponentes = controller.llamarNumeroComponentesFuertementeConectados(catalogo['vuelos'])
+        print(f'El numero de componentes fuertemente conectados es de: {numComponentes}')
+        IATA1 = input('Digite el codigo IATA del aeropuerto 1: ')
+        IATA2 = input('Digite el codigo IATA del aeropuerto 2: ')
+        
+        aeropuerto1 = controller.infoMap(catalogo['aeropuertos'], IATA1)
+        aeropuerto2 = controller.infoMap(catalogo['aeropuertos'], IATA2)
+        
+        estanConectados = controller.llamarEstanFuertementeConectados(catalogo['vuelos'],IATA1,IATA2)
+        
+        print('El Aeropuerto 1 es: ')
+        print('')
+        print('    IATA    |    Nombre    |    Ciudad    |    País')
+        print('')
+        print('  {}  {}  {}  {}  '.format(aeropuerto1['IATA'], aeropuerto1['nombre'], aeropuerto1['ciudad'], aeropuerto1['pais']))
+        print('')
+        print('El Aeropuerto 2 es: ')
+        print('')
+        print('    IATA    |    Nombre    |    Ciudad    |    País')
+        print('')
+        print('  {}  {}  {}  {}  '.format(aeropuerto2['IATA'], aeropuerto2['nombre'], aeropuerto2['ciudad'], aeropuerto2['pais']))
+        print('')
+        if estanConectados:
+            print(f'El aeropuerto de IATA: {IATA1} esta fuertemente conectado con el aeropuerto de IATA: {IATA2}')
+        else:
+            print(f'El aeropuerto de IATA: {IATA1} no esta fuertemente conectado con el aeropuerto de IATA: {IATA2}')
+
     elif int(inputs[0]) == 4:
         
         ciudadSalida = input('Digite la ciudad de salida: ')
@@ -202,6 +227,12 @@ while True:
         distanciaTotal = menorSalida + menorLlegada +  sumaDistanciaRuta  
         print('Distancia total de la ruta: ', distanciaTotal)
         
+
+    elif int(inputs[0]) == 5:
+        aeropuerto = input('Escriba el codigo del aeropuerto de salida: ')
+        millas = input('Escriba el numero de millas disponibles: ')
+
+
 
     else:
         sys.exit(0)

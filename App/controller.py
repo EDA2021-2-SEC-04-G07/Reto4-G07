@@ -141,3 +141,9 @@ def elementoPila(pila):
 
 def aeropuertosInterconectados(grafo, catalogo):
     return model.aeropuertosInterconectados(grafo, catalogo)
+
+def llamarNumeroComponentesFuertementeConectados(grafo):
+    return model.numeroComponentesFuertementeConectados(grafo)
+
+def llamarEstanFuertementeConectados(grafo,elemento1,elemento2):
+    return model.estanFuertementeConectados(grafo,elemento1,elemento2)

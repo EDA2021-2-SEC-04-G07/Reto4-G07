@@ -270,6 +270,14 @@ def camino(grafo, vertice):
     pila = djk.pathTo(grafo, vertice)
     return pila
 
+def numeroComponentesFuertementeConectados(grafo):
+
+    sccGraph = scc.KosarajuSCC(grafo)
+    return scc.connectedComponents(sccGraph)
+
+def estanFuertementeConectados(grafo,elemento1,elemento2):
+    sccGraph = scc.KosarajuSCC(grafo)
+    return scc.stronglyConnected(sccGraph,elemento1,elemento2)
 
 def sizePila(pila):
     return sk.size(pila)
@@ -323,5 +331,6 @@ def aeropuertosInterconectados(grafo, catalogo):
 
 def cmpCiudades():
     pass
+
 
 # Funciones de ordenamiento
