@@ -332,7 +332,7 @@ while True:
             
         elif distanciaKilometros/2 < distancia:
             d = distancia - (distanciaKilometros/2)
-            print('Le hacen falta {} millas', d)
+            print('Le hacen falta {} millas.', d)
         
 
     elif int(inputs[0]) == 6:
