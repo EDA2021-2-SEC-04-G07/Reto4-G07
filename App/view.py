@@ -24,6 +24,11 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.Algorithms.Graphs import prim as pm
+from DISClib.ADT.graph import gr
+from DISClib.Algorithms.Graphs import dfs
+from DISClib.Algorithms.Graphs import cycles
+from DISClib.ADT import orderedmap as om
 assert cf
 
 sys.setrecursionlimit(1000000000)
@@ -275,7 +280,60 @@ while True:
 
     elif int(inputs[0]) == 5:
         aeropuerto = input('Escriba el codigo del aeropuerto de salida: ')
-        millas = input('Escriba el numero de millas disponibles: ')
+        millas = float(input('Escriba el numero de millas disponibles: '))
+        
+        distanciaKilometros = millas * 1.60
+        
+        pre = controller.PrimMST(catalogo['vuelos'])
+        edges = pm.edgesMST(catalogo['vuelos'], pre)
+        grafo = gr.newGraph(datastructure='ADJ_LIST',
+                            directed=True,
+                            size=14000,
+                            comparefunction=None)
+        
+        pesoTotal = 0
+        
+        for i in lt.iterator(edges['mst']):
+            
+            if not gr.containsVertex(grafo, i['vertexA']):
+                gr.insertVertex(grafo, i['vertexA'])
+                
+            if not gr.containsVertex(grafo, i['vertexB']):
+                gr.insertVertex(grafo, i['vertexB'])
+                
+            if gr.getEdge(grafo, i['vertexA'], i['vertexB']) == None:
+                gr.addEdge(grafo, i['vertexA'], i['vertexB'], i['weight'])
+                
+            pesoTotal += i['weight']
+                
+        numNodos = gr.numVertices(grafo)  
+            
+        lista = lt.newList()
+        prueba = controller.prueba(grafo, aeropuerto, lista) 
+        
+        distancia = 0
+        
+        for i in lt.iterator(lista):
+            distancia += i['weight'] 
+        
+        print('Número posible de aeropuertos: ', numNodos)
+        print('Suma de distancias del MST: ', pesoTotal)
+        print('Distancia camino desde aeropuerto: ', distancia)
+        print('Camino más largo: ')
+        
+        for j in lt.iterator(lista):
+            print('{} -> {}  // Distancia: {}'. format(j['vertexA'], j['vertexB'], j['weight']))
+        
+        print('')
+        
+        if distanciaKilometros/2 > distancia:
+            d = (distanciaKilometros/2) - distancia
+            print('Le quedan {} millas', d)
+            
+        elif distanciaKilometros/2 < distancia:
+            d = distancia - (distanciaKilometros/2)
+            print('Le hacen falta {} millas', d)
+        
 
     elif int(inputs[0]) == 6:
         IATA = input('Escriba el codigo del aeropuerto fuera de funcionamiento: ')

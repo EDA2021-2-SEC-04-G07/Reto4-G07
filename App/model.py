@@ -37,6 +37,7 @@ from DISClib.Algorithms.Sorting import mergesort as mst
 from DISClib.ADT.graph import gr
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim as pm
 assert cf
 
 """
@@ -375,6 +376,11 @@ def sublista(lista, pos, num):
     
     sublista = lt.subList(lista, pos, num)
     return sublista
+
+
+def PrimMST(grafo):
+    mst = pm.PrimMST(grafo)
+    return mst
             
             
     
@@ -390,6 +396,26 @@ def cmpInterconectados(aero1, aero2):
         return True
     else:
         return False
+    
+    
+def prueba(grafo, aeropuerto, lista):
+    
+    mayor = 0
+    arcoMayor = None
+    arcos = gr.adjacentEdges(grafo, aeropuerto)
+    
+    if lt.size(arcos) != 0:
+            
+        for h in lt.iterator(arcos):
+                
+            if h['weight'] > mayor:
+                mayor = h['weight']
+                arcoMayor = h
+            
+        lt.addLast(lista, arcoMayor)
+        prueba(grafo, arcoMayor['vertexB'], lista)
+        
+    return lista
     
 
 # Funciones de ordenamiento

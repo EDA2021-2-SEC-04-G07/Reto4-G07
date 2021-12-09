@@ -165,3 +165,10 @@ def llamarDarRutasAfectadas(listaRutas,IATA):
 
 def llamarDarListaAeropuertosIATA(catalogo, listaIATA):
     return model.darListaAeropuertosIATA(catalogo, listaIATA)
+
+def PrimMST(grafo):
+    return model.PrimMST(grafo)
+
+
+def prueba(grafo, aeropuerto, lista):
+    return model.prueba(grafo, aeropuerto, lista)  
