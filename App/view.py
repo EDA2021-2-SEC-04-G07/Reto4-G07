@@ -53,8 +53,8 @@ def printMenu():
     print("7- Comparar con servicio WEB externo")
 
 catalogo = None
-infoAeropuertos = 'airports-utf8-small.csv'
-infoRutas = 'routes-utf8-small.csv'
+infoAeropuertos = 'airports-utf8-large.csv'
+infoRutas = 'routes-utf8-large.csv'
 infoCiudades = 'worldcities-utf8.csv'
 
 """
